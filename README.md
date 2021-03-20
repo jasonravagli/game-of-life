@@ -20,7 +20,7 @@ At each time step the grid state is updated applying the following rules to all 
 
 ## Implementation
 This repository is a Python implementation of the Conway's Game of Life using PyQt5 and Numpy.  
-The implemented automaton uses a **fixed size grid** with default dimensions of **150 rows** and **300 columns** (this size is configurable inside the
+The implemented automaton uses a **fixed size grid** with default dimensions of **150 rows** and **250 columns** (this size is configurable inside the
 [config.py](config.py) file).
 Numpy vectorial operations are used to speedup the grid update and ensure a real time simulation with a reasonable speed.
 
@@ -39,16 +39,19 @@ Numpy vectorial operations are used to speedup the grid update and ensure a real
 - Start/Pause the grid evolution
 - Control the simulation speed through a slider (from 1 to 60 update per second)
 - Perform a single step of the simulation
-- Edit the grid state when the simulation is paused.  
-  Clicking and dragging the mouse through the grid allow the user to edit multiple cells smoothly
-- Choose from a list of known Game of Life patterns.  
+- Fixed size grid  
+  The grid is not resizable, with a default dimension of 150 rows x 250 columns. However it is possible to change its size from the [config.py](config.py) file
+before running the application.
+- Edit the grid state when the simulation is paused  
+  Clicking and dragging the mouse through the grid allow the user to edit multiple cells smoothly.
+- Choose from a list of known Game of Life patterns  
   More file patterns can be added to the _patterns_ folder to make them available inside the application.
 Currently only the [plaintext format](https://www.conwaylife.com/wiki/Plaintext) is supported.
 - Clear the grid to bring it back to the original state (blank if no pattern is selected)
 - Save/Load a custom grid state into/from a plaintext file (.cells)
-- Show the cells age.  
-  Beside the classical binary visualization of the grid state, the application can provide a colored representation for the cells based on their
-age (the time steps that they are alive) and using a color gradient ranging from light blue (newborn cell) to red (ancient cell)
+- Show the cells age  
+  Besides the classical binary visualization of the grid state, the application can provide a colored representation for the cells based on their
+age (the time steps that they are alive) and using a color gradient ranging from light blue (newborn cell) to red (ancient cell).
 
 ## How to run it
 Simply run the [main.py](main.py) script: `python main.py`
