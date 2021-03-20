@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel, QSizePolicy, QWidget
 
-import utils
+from utils.utils import numpy_to_qimage
 from model.gol_model import GOLModel
 
 
@@ -134,7 +134,7 @@ class GridWidget(QLabel):
         """
 
         # Transform the numpy array of the grid state into an image (QPixmap) to be displayed on the widget
-        qimage = utils.numpy_to_qimage(self._gol_model.get_grid_as_numpy(), self._gol_model.get_show_cell_age())
+        qimage = numpy_to_qimage(self._gol_model.get_grid_as_numpy(), self._gol_model.get_show_cell_age())
         qpixmap = QPixmap.fromImage(qimage)
         # Scale the created QPixmap to fit the widget
         self.setPixmap(qpixmap.scaled(self.width(), self.height(), Qt.KeepAspectRatio))

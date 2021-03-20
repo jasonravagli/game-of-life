@@ -1,7 +1,7 @@
 import numpy as np
-from PyQt5.QtGui import QImage, qRgb
+from PyQt5.QtGui import QImage
 
-import colors
+import utils.colors as colors
 
 
 def numpy_to_qimage(np_array: np.ndarray, show_age: bool):

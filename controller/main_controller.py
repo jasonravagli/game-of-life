@@ -4,11 +4,11 @@ import numpy as np
 from PyQt5.QtWidgets import QFileDialog, QApplication
 from scipy import ndimage
 
-import patterns
+from utils import patterns
 from config import config
 from gui.main_window import MainWindow
 from model.gol_model import GOLModel
-from worker import Worker
+from utils.worker import Worker
 
 
 class MainController:

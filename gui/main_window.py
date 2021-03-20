@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
-import patterns
+from utils import patterns
 from gui.grid_widget import GridWidget
 from gui.ui_main_window import Ui_MainWindow
 from model.gol_model import GOLModel
