@@ -12,6 +12,10 @@ from worker import Worker
 
 
 class MainController:
+    """
+    Class representing the controller of the MVC pattern. It connects to the GUI signals to catch the user interactions
+    and modify the GOL state model accordingly.
+    """
 
     def __init__(self, application: QApplication, main_window: MainWindow, gol_model: GOLModel):
         self._application = application
@@ -40,15 +44,19 @@ class MainController:
         Clear the GOL grid bringing it back to its initial state (depending on the chosen pattern)
         :return:
         """
-        self._main_window.reset_combo_patterns()
-        new_grid = np.zeros(self._gol_model.get_grid_size(), np.uint8)
-        self._gol_model.set_grid_as_numpy(new_grid)
+        self.select_example_pattern(self._gol_model.get_base_pattern())
+        self._main_window.show_message_on_status_bar("Grid cleared")
 
     def load_custom_pattern(self):
+        """
+        Load a pattern from a chosen file into the current GOL state
+        :return:
+        """
         self._main_window.reset_combo_patterns()
         file_path = QFileDialog.getOpenFileName(self._main_window, "Load pattern file", filter="Pattern File (*.cells)")[0]
         if file_path:
             self._load_file(file_path)
+            self._main_window.show_message_on_status_bar("Pattern loaded")
 
     def _load_file(self, file_path: str):
         """
@@ -76,14 +84,21 @@ class MainController:
 
     def save_pattern(self):
         """
-
+        Save the current grid state in a .cells file as a reloadable state
         :return:
         """
         file_path = QFileDialog.getSaveFileName(self._main_window, "Save pattern file", filter="Pattern File (*.cells)")[0]
         if file_path:
             patterns.save_pattern_file(file_path, self._gol_model.get_grid_as_numpy())
+            self._main_window.show_message_on_status_bar("Pattern saved")
 
     def select_example_pattern(self, pattern_name):
+        """
+        Load a predefined pattern chosen from the provided list
+        :param pattern_name: The name of the pattern to load (it is the same of its file name)
+        :return:
+        """
+        self._gol_model.set_base_pattern(pattern_name)
         # The selected pattern is the custom one: restart from a blank grid
         if pattern_name == "Custom":
             new_grid = np.zeros(self._gol_model.get_grid_size(), np.uint8)
@@ -93,6 +108,11 @@ class MainController:
             self._load_file(file_path)
 
     def set_speed(self, speed):
+        """
+        Change the simulation speed
+        :param speed: The simulation speed in FPS
+        :return:
+        """
         self._gol_model.set_fps(speed)
         if self._gol_model.get_running():
             self._worker.set_wait_time(1 / self._gol_model.get_fps())

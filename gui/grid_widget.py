@@ -1,15 +1,18 @@
 import math
 
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPixmap, QCursor
-from PyQt5.QtWidgets import QLabel, QSizePolicy
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QLabel, QSizePolicy, QWidget
 
 import utils
 from model.gol_model import GOLModel
 
 
 class GridWidget(QLabel):
+    """
+    Custom widget to display and edit the current GOL grid state
+    """
 
     # Signal to notify the mouse click on a cell of the grid
     cell_clicked = pyqtSignal(tuple)
@@ -29,14 +32,56 @@ class GridWidget(QLabel):
         # Coordinates of the QPixmap (the grid) upper-left corner inside the QLabel. They are required to handle mouse events on the cells
         self.x_pixmap = 0
         self.y_pixmap = 0
+        # Keep track of the last tile drawn to handle continuous drawing through mouse dragging
+        self._last_tile_drawn_row = -1
+        self._last_tile_drawn_col = -1
+        # Flag that indicates whether we are drawing on the grid (the mouse is pressed)
+        self._drawing = False
+
+        # To enable the mouseMoveEvent tracking
+        QWidget.setMouseTracking(self, True)
 
     def connect_to_cell_clicked(self, slot):
         self.cell_clicked.connect(slot)
 
-    def mouseReleaseEvent(self, ev: QtGui.QMouseEvent) -> None:
+    def mouseMoveEvent(self, ev: QtGui.QMouseEvent) -> None:
         """
-        Slot for the mouse release event on the widget. It allows the user to edit the grid cells.
-        Emits the cell_clicked signal sending to the connected slots the coordinates (row, column) of the clicked grid cell.
+        Slot for the mouse move event on the widget.
+        When the application is in a drawing session (the mouse is clicked and dragged), toggle the state of all the
+        cells where the mouse pass over.
+        :param ev: The mouse event
+        """
+        x_pos = ev.pos().x()
+        y_pos = ev.pos().y()
+
+        # Check if the mouse position is inside the effective level grid image
+        x_grid = x_pos - self.x_pixmap
+        y_grid = y_pos - self.y_pixmap
+        if 0 <= x_grid < self.pixmap().width() and 0 <= y_grid < self.pixmap().height() and \
+                not self._gol_model.get_running():
+            self.setCursor(Qt.CrossCursor)
+
+            # Check if we are drawing (the mouse is pressed and dragged)
+            if self._drawing:
+                # Converts the widget coordinates into grid coordinates
+                grid_size = self._gol_model.get_grid_size()
+                row = math.floor(y_grid * grid_size[0] / self.pixmap().height())
+                col = math.floor(x_grid * grid_size[1] / self.pixmap().width())
+
+                # Check if the event was already handled for this tile (the mouse is moved over the same tile)
+                if row != self._last_tile_drawn_row or col != self._last_tile_drawn_col:
+                    self.cell_clicked.emit((row, col))
+                    self._last_tile_drawn_row = row
+                    self._last_tile_drawn_col = col
+        else:
+            self.unsetCursor()
+
+    def mousePressEvent(self, ev: QtGui.QMouseEvent) -> None:
+        """
+        Slot for the mouse press event on the widget. It allows the user to edit the grid cells when the simulation is
+        not running.
+        Emits the cell_clicked signal sending to the connected slots the coordinates (row, column) of the clicked grid cell
+        and starts a drawing session (continuous drawing through mouse dragging).
         :param ev: The mouse event
         """
 
@@ -49,11 +94,28 @@ class GridWidget(QLabel):
             x_grid = x_click - self.x_pixmap
             y_grid = y_click - self.y_pixmap
             if 0 <= x_grid < self.pixmap().width() and 0 <= y_grid < self.pixmap().height():
+                # Converts the widget coordinates into grid coordinates
                 grid_size = self._gol_model.get_grid_size()
-                row = math.floor(y_grid*grid_size[0]/self.pixmap().height())
-                col = math.floor(x_grid*grid_size[1]/self.pixmap().width())
+                row = math.floor(y_grid * grid_size[0] / self.pixmap().height())
+                col = math.floor(x_grid * grid_size[1] / self.pixmap().width())
 
                 self.cell_clicked.emit((row, col))
+                self._last_tile_drawn_row = row
+                self._last_tile_drawn_col = col
+
+                # Start continuous drawing
+                self._drawing = True
+
+    def mouseReleaseEvent(self, ev: QtGui.QMouseEvent) -> None:
+        """
+        Slot for the mouse release event on the widget.
+        Ends the drawing session.
+        :param ev: The mouse event
+        """
+
+        self._drawing = False
+        self._last_tile_drawn_row = -1
+        self._last_tile_drawn_col = -1
 
     def resizeEvent(self, a0: QtGui.QResizeEvent) -> None:
         """

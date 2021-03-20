@@ -3,10 +3,14 @@ import time
 
 
 class Worker(threading.Thread):
+    """
+    Object that performs a recurrent task in loop on a separate thread
+    """
 
     def __init__(self, task, wait_time):
         """
-        Construct an object that performs a recurrent task in loop on a separate thread
+        Object constructor
+
         :param task: The task (a function) to execute
         :param wait_time: Seconds to wait between two consecutive executions
         """

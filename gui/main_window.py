@@ -7,6 +7,10 @@ from model.gol_model import GOLModel
 
 
 class MainWindow(QMainWindow):
+    """
+    Main window of the GUI (the view in the MVC pattern)
+    """
+
     def __init__(self, gol_model: GOLModel):
         super().__init__()
 
@@ -28,6 +32,7 @@ class MainWindow(QMainWindow):
         self._gol_model.observe(self.update_controls)
         self.update_controls()
 
+    # Methods to connect slots to the GUI controls signals
     def connect_to_button_clear(self, slot):
         self.ui.button_clear.clicked.connect(slot)
 
@@ -58,10 +63,16 @@ class MainWindow(QMainWindow):
     def show_error_message(self, message: str):
         """
         Show an error message into a popup dialog
-
-        :param message: THe message to show
+        :param message: The message to show
         """
         QMessageBox.critical(self, "Error", message)
+
+    def show_message_on_status_bar(self, message: str):
+        """
+        Show a message on the status bar at the bottom of the window
+        :param message: The message to show
+        """
+        self.statusBar().showMessage(message, 2500)
 
     def update_controls(self):
         """
