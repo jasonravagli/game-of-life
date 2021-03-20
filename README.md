@@ -2,7 +2,7 @@
 Python implementation of the Conway's Game of Life using PyQt5 and Numpy.
 
 ## Game of Life
-The Game of Life is a cellular automaton, that is a grid system composed of cells which can assume a finite number of states and base on a set of
+The Game of Life is a cellular automaton, i.e. a grid system composed of cells which can assume a finite number of states and base on a set of
 rules applied to cells and their neighbors.  
 It was devised by the British matematician John Horton Conway in 1970 as a simplification of the John von Neumann original idea to realize a cellular automaton that
 simulated a Turing machine.  
