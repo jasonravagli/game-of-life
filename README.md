@@ -14,8 +14,9 @@ At each time step the grid state is updated applying the following rules to all 
 - Each living cell with one or zero living neighbors dies
 - Each living cell with four or more living neighbors dies
 - Each living cell with two or three living neighbors survives
-- Each dead cell will be born if it has exactly three living neighbors
+- Each dead cell will be born if it has exactly three living neighbors  
 
+![Game of Life rules](resources/images/rules.png)
 
 ## Implementation
 This repository is a Python implementation of the Conway's Game of Life using PyQt5 and Numpy.  
@@ -29,20 +30,24 @@ Numpy vectorial operations are used to speedup the grid update and ensure a real
 | **python** | tested on v3.8.6 | 
 | **numpy** | tested on v1.19.5 |
 | **pyqt** | tested on v5.9.2 |
-| **qdarkstyle** | tested on v2.8.1  |
+| **qdarkstyle** | tested on v2.8.1 |
 
 ### Graphical User Interface
+![GUI Screenshot](resources/images/gui-screen.png)
 
 ### Features
 - Start/Pause the grid evolution
 - Control the simulation speed through a slider (from 1 to 60 update per second)
 - Perform a single step of the simulation
-- Edit the grid state when the simulation is paused. Clicking and dragging the mouse through the grid allow the user to edit multiple cells smoothly
-- Choose from a list of known Game of Life patterns. More file patterns can be added to the _patterns_ folder to make them available inside the application.
+- Edit the grid state when the simulation is paused.  
+  Clicking and dragging the mouse through the grid allow the user to edit multiple cells smoothly
+- Choose from a list of known Game of Life patterns.  
+  More file patterns can be added to the _patterns_ folder to make them available inside the application.
 Currently only the [plaintext format](https://www.conwaylife.com/wiki/Plaintext) is supported.
 - Clear the grid to bring it back to the original state (blank if no pattern is selected)
 - Save/Load a custom grid state into/from a plaintext file (.cells)
-- Show the cells age. Beside the classical binary visualization of the grid state, the application can provide a colored representation for the cells based on their
+- Show the cells age.  
+  Beside the classical binary visualization of the grid state, the application can provide a colored representation for the cells based on their
 age (the time steps that they are alive) and using a color gradient ranging from light blue (newborn cell) to red (ancient cell)
 
 ## How to run it

@@ -24,7 +24,7 @@ def read_pattern_file(file_path: str) -> np.ndarray:
 
     # Check if the example file exists
     if not os.path.isfile(file_path):
-        pass
+        return None
 
     rows = 0
     cols = 0

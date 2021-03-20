@@ -52,35 +52,41 @@ class MainController:
         Load a pattern from a chosen file into the current GOL state
         :return:
         """
-        self._main_window.reset_combo_patterns()
         file_path = QFileDialog.getOpenFileName(self._main_window, "Load pattern file", filter="Pattern File (*.cells)")[0]
         if file_path:
-            self._load_file(file_path)
-            self._main_window.show_message_on_status_bar("Pattern loaded")
+            self._main_window.reset_combo_patterns()
+            if self._load_file(file_path):
+                self._main_window.show_message_on_status_bar("Pattern loaded")
 
     def _load_file(self, file_path: str):
         """
         Helper method to load a pattern from a .cells file (plain text format).
 
         :param file_path: Path of the pattern file
-        :return:
+        :return: False if the file is invalid or the pattern do not fit the current grid, otherwise True
         """
         grid_pattern = patterns.read_pattern_file(file_path)
 
-        grid_height, grid_width = self._gol_model.get_grid_size()
-        pattern_height, pattern_width = grid_pattern.shape
-
-        # If the pattern is bigger than the grid show an error
-        if pattern_height > grid_height or pattern_width > grid_width:
-            self._main_window.show_error_message("The loaded pattern is bigger than the available grid")
+        if grid_pattern is None:
+            self._main_window.show_error_message("Invalid pattern file")
+            return False
         else:
-            # Copy the pattern at the center of a blank grid
-            new_grid = np.zeros(self._gol_model.get_grid_size(), np.uint8)
-            v_margin = (grid_height - pattern_height) // 2
-            h_margin = (grid_width - pattern_width) // 2
-            new_grid[v_margin:v_margin + pattern_height, h_margin:h_margin + pattern_width] = grid_pattern
+            grid_height, grid_width = self._gol_model.get_grid_size()
+            pattern_height, pattern_width = grid_pattern.shape
 
-            self._gol_model.set_grid_as_numpy(new_grid)
+            # If the pattern is bigger than the grid show an error
+            if pattern_height > grid_height or pattern_width > grid_width:
+                self._main_window.show_error_message("The loaded pattern is bigger than the available grid")
+                return False
+            else:
+                # Copy the pattern at the center of a blank grid
+                new_grid = np.zeros(self._gol_model.get_grid_size(), np.uint8)
+                v_margin = (grid_height - pattern_height) // 2
+                h_margin = (grid_width - pattern_width) // 2
+                new_grid[v_margin:v_margin + pattern_height, h_margin:h_margin + pattern_width] = grid_pattern
+
+                self._gol_model.set_grid_as_numpy(new_grid)
+                return True
 
     def save_pattern(self):
         """
@@ -105,7 +111,9 @@ class MainController:
             self._gol_model.set_grid_as_numpy(new_grid)
         else:
             file_path = os.path.join(config.ROOT_PATH, config.FOLDER_PATTERNS, pattern_name + ".cells")
-            self._load_file(file_path)
+            if not self._load_file(file_path):
+                # Something went wrong during the pattern loading: select the Custom pattern
+                self._main_window.reset_combo_patterns()
 
     def set_speed(self, speed):
         """
